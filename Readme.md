@@ -156,11 +156,11 @@ cd frontend
 npm start
 ```
 
-### 🔍 Troubleshooting
+#### 🔍 Troubleshooting
 
-#### Code Errors:
+##### Code Errors:
 
-##### If you get Python errors:
+###### If you get Python errors:
 ```bash
 # Make sure Python is installed
 python --version
@@ -169,7 +169,7 @@ python --version
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
-##### If you get Node.js errors:
+###### If you get Node.js errors:
 ```bash
 # Clear npm cache
 npm cache clean --force
@@ -178,7 +178,7 @@ npm cache clean --force
 rm -rf node_modules package-lock.json
 npm install
 ```
-#### Common Issues:
+##### Common Issues:
 
 1. **PDF Upload Fails**:
    - Check file size (< 10MB recommended)
@@ -195,7 +195,7 @@ npm install
    - Check browser console for errors
    - Ensure document was successfully processed
 
-#### Debugging:
+##### Debugging:
 
 ```bash
 # Backend logs
