@@ -156,11 +156,11 @@ cd frontend
 npm start
 ```
 
-#### 🔍 Troubleshooting
+### 🔍 Troubleshooting
 
-##### Code Errors:
+#### Code Errors:
 
-###### If you get Python errors:
+##### If you get Python errors:
 ```bash
 # Make sure Python is installed
 python --version
@@ -169,7 +169,7 @@ python --version
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
-###### If you get Node.js errors:
+##### If you get Node.js errors:
 ```bash
 # Clear npm cache
 npm cache clean --force
@@ -178,7 +178,7 @@ npm cache clean --force
 rm -rf node_modules package-lock.json
 npm install
 ```
-##### Common Issues:
+#### Common Issues:
 
 1. **PDF Upload Fails**:
    - Check file size (< 10MB recommended)
@@ -195,7 +195,7 @@ npm install
    - Check browser console for errors
    - Ensure document was successfully processed
 
-##### Debugging:
+#### Debugging:
 
 ```bash
 # Backend logs
@@ -208,9 +208,9 @@ railway logs  # On Railway
 curl http://localhost:8000/health
 ```
 
-## 🚂 Railway Deployment (Backend)
+### 🚂 Railway Deployment (Backend)
 
-### Option 1: Deploy from GitHub
+#### Option 1: Deploy from GitHub
 1. **Push your backend code to GitHub**:
 ```bash
 git init
@@ -226,7 +226,7 @@ git push -u origin main
    - Add environment variable: `GEMINI_API_KEY=your_actual_api_key`
    - Railway will automatically detect the Dockerfile and deploy
 
-### Option 2: Railway CLI
+#### Option 2: Railway CLI
 ```bash
 # Install Railway CLI
 npm install -g @railway/cli
@@ -240,7 +240,7 @@ railway up    # Deploy
 railway variables set GEMINI_API_KEY=your_actual_api_key
 ```
 
-## 📦 Vercel Deployment (Frontend)
+### 📦 Vercel Deployment (Frontend)
 
 ### Option 1: Deploy from GitHub
 1. **Push frontend to GitHub**:
@@ -258,7 +258,7 @@ git push -u origin main
    - Add environment variable: `REACT_APP_API_URL=https://your-railway-backend-url.railway.app`
    - Deploy
 
-### Option 2: Vercel CLI
+#### Option 2: Vercel CLI
 ```bash
 # Install Vercel CLI
 npm install -g vercel
@@ -271,13 +271,13 @@ vercel env add REACT_APP_API_URL production
 # Enter: https://your-railway-backend-url.railway.app
 ```
 
-## 🔧 Configuration
-### Backend Environment Variables
+### 🔧 Configuration
+#### Backend Environment Variables
 ```bash
 env
 GEMINI_API_KEY=your_gemini_api_key_here
 ```
-### Frontend Environment Variables
+#### Frontend Environment Variables
 
 ```bash
 env
