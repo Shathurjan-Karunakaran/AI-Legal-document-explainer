@@ -1,2 +1,21 @@
 backend/.env
 frontend/.env
+
+# Dependencies
+frontend/node_modules/
+
+# Build outputs
+frontend/build/
+frontend/dist/
+frontend/out/
+frontend/.next/
+
+# Vercel
+frontend/.vercel/
+
+# IDE & OS
+frontend/.DS_Store
+frontend/*.log
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
