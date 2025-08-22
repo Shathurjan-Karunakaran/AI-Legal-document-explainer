@@ -1,46 +1,59 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Upload, FileText, AlertTriangle, MessageCircle, Send, Loader, CheckCircle, XCircle, Eye, Users, AlertCircle, DollarSign } from 'lucide-react';
+import React, { useState, useRef, useEffect } from "react";
+import {
+  Upload,
+  FileText,
+  AlertTriangle,
+  MessageCircle,
+  Send,
+  Loader,
+  CheckCircle,
+  XCircle,
+  Eye,
+  Users,
+  AlertCircle,
+  DollarSign,
+} from "lucide-react";
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
 function App() {
   const [document, setDocument] = useState(null);
   const [analysis, setAnalysis] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [chatMessages, setChatMessages] = useState([]);
-  const [chatInput, setChatInput] = useState('');
+  const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState('summary');
-  
+  const [activeTab, setActiveTab] = useState("summary");
+
   const fileInputRef = useRef(null);
   const chatEndRef = useRef(null);
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatMessages]);
 
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
-    if (file.type !== 'application/pdf') {
-      setError('Please upload a PDF file.');
+    if (file.type !== "application/pdf") {
+      setError("Please upload a PDF file.");
       return;
     }
 
     setLoading(true);
-    setError('');
+    setError("");
     setDocument(null);
     setAnalysis(null);
     setChatMessages([]);
 
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
 
     try {
       const response = await fetch(`${API_BASE_URL}/upload-document`, {
-        method: 'POST',
+        method: "POST",
         body: formData,
       });
 
@@ -51,11 +64,12 @@ function App() {
       const result = await response.json();
       setDocument(result);
       setAnalysis(result.analysis);
-      
+
       // Add welcome message to chat
-      setChatMessages([{
-        type: 'ai',
-        content: `✅ Document "${result.filename}" has been successfully analyzed! I now have full access to your document content. 
+      setChatMessages([
+        {
+          type: "ai",
+          content: `✅ Document "${result.filename}" has been successfully analyzed! I now have full access to your document content. 
 
 Here are some questions you can ask me:
 • "What are the key terms and conditions?"
@@ -67,9 +81,9 @@ Here are some questions you can ask me:
 • "Are there any auto-renewal clauses?"
 
 Feel free to ask about any specific part of your document!`,
-        timestamp: new Date().toISOString()
-      }]);
-      
+          timestamp: new Date().toISOString(),
+        },
+      ]);
     } catch (err) {
       setError(`Failed to upload document: ${err.message}`);
     } finally {
@@ -82,24 +96,24 @@ Feel free to ask about any specific part of your document!`,
     if (!chatInput.trim() || !document || chatLoading) return;
 
     const userMessage = {
-      type: 'user',
+      type: "user",
       content: chatInput.trim(),
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
-    setChatMessages(prev => [...prev, userMessage]);
+    setChatMessages((prev) => [...prev, userMessage]);
     setChatLoading(true);
-    setChatInput('');
+    setChatInput("");
 
     try {
       const response = await fetch(`${API_BASE_URL}/chat`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           message: userMessage.content,
-          document_id: document.document_id  // Send document_id instead of trying to access document_store
+          document_id: document.document_id, // Send document_id instead of trying to access document_store
         }),
       });
 
@@ -108,41 +122,49 @@ Feel free to ask about any specific part of your document!`,
       }
 
       const result = await response.json();
-      
+
       const aiMessage = {
-        type: 'ai',
+        type: "ai",
         content: result.response,
-        timestamp: result.timestamp
+        timestamp: result.timestamp,
       };
 
-      setChatMessages(prev => [...prev, aiMessage]);
+      setChatMessages((prev) => [...prev, aiMessage]);
     } catch (err) {
       const errorMessage = {
-        type: 'ai',
+        type: "ai",
         content: `Sorry, I encountered an error: ${err.message}`,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
-      setChatMessages(prev => [...prev, errorMessage]);
+      setChatMessages((prev) => [...prev, errorMessage]);
     } finally {
       setChatLoading(false);
     }
-};
+  };
 
   const getSeverityIcon = (severity) => {
     switch (severity?.toLowerCase()) {
-      case 'high': return <XCircle className="w-4 h-4 text-red-500" />;
-      case 'medium': return <AlertCircle className="w-4 h-4 text-yellow-500" />;
-      case 'low': return <CheckCircle className="w-4 h-4 text-green-500" />;
-      default: return <AlertCircle className="w-4 h-4 text-gray-500" />;
+      case "high":
+        return <XCircle className="w-4 h-4 text-red-500" />;
+      case "medium":
+        return <AlertCircle className="w-4 h-4 text-yellow-500" />;
+      case "low":
+        return <CheckCircle className="w-4 h-4 text-green-500" />;
+      default:
+        return <AlertCircle className="w-4 h-4 text-gray-500" />;
     }
   };
 
   const getRiskTypeIcon = (type) => {
     switch (type?.toLowerCase()) {
-      case 'financial': return <DollarSign className="w-4 h-4 text-green-600" />;
-      case 'legal': return <FileText className="w-4 h-4 text-blue-600" />;
-      case 'operational': return <Users className="w-4 h-4 text-purple-600" />;
-      default: return <AlertTriangle className="w-4 h-4 text-orange-600" />;
+      case "financial":
+        return <DollarSign className="w-4 h-4 text-green-600" />;
+      case "legal":
+        return <FileText className="w-4 h-4 text-blue-600" />;
+      case "operational":
+        return <Users className="w-4 h-4 text-purple-600" />;
+      default:
+        return <AlertTriangle className="w-4 h-4 text-orange-600" />;
     }
   };
 
@@ -156,8 +178,12 @@ Feel free to ask about any specific part of your document!`,
               <FileText className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">AI Legal Document Explainer</h1>
-              <p className="text-gray-600">Upload PDFs, get instant analysis, and chat with your documents</p>
+              <h1 className="text-2xl font-bold text-gray-900">
+                AI Legal Document Explainer
+              </h1>
+              <p className="text-gray-600">
+                Upload PDFs, get instant analysis, and chat with your documents
+              </p>
             </div>
           </div>
         </div>
@@ -168,7 +194,7 @@ Feel free to ask about any specific part of your document!`,
         {!document && (
           <div className="text-center py-12">
             <div className="max-w-md mx-auto">
-              <div 
+              <div
                 onClick={() => fileInputRef.current?.click()}
                 className="border-2 border-dashed border-blue-300 rounded-xl p-8 hover:border-blue-400 transition-colors cursor-pointer bg-white/50 backdrop-blur-sm"
               >
@@ -176,21 +202,29 @@ Feel free to ask about any specific part of your document!`,
                   <div className="flex flex-col items-center space-y-4">
                     <Loader className="w-12 h-12 text-blue-600 animate-spin" />
                     <div>
-                      <p className="text-lg font-medium text-gray-900">Processing Document...</p>
-                      <p className="text-sm text-gray-600">This may take a few moments</p>
+                      <p className="text-lg font-medium text-gray-900">
+                        Processing Document...
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        This may take a few moments
+                      </p>
                     </div>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center space-y-4">
                     <Upload className="w-12 h-12 text-blue-600" />
                     <div>
-                      <p className="text-lg font-medium text-gray-900">Upload Legal Document</p>
-                      <p className="text-sm text-gray-600">Click to upload a PDF file (max 10MB)</p>
+                      <p className="text-lg font-medium text-gray-900">
+                        Upload Legal Document
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Click to upload a PDF file (max 10MB)
+                      </p>
                     </div>
                   </div>
                 )}
               </div>
-              
+
               <input
                 ref={fileInputRef}
                 type="file"
@@ -199,7 +233,7 @@ Feel free to ask about any specific part of your document!`,
                 className="hidden"
                 disabled={loading}
               />
-              
+
               {error && (
                 <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
                   <p className="text-sm text-red-600">{error}</p>
@@ -219,33 +253,39 @@ Feel free to ask about any specific part of your document!`,
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-3">
                     <FileText className="w-5 h-5 text-blue-600" />
-                    <h2 className="text-lg font-semibold text-gray-900">Document Analysis</h2>
+                    <h2 className="text-lg font-semibold text-gray-900">
+                      Document Analysis
+                    </h2>
                   </div>
                   <button
                     onClick={() => {
                       setDocument(null);
                       setAnalysis(null);
                       setChatMessages([]);
-                      setActiveTab('summary');
+                      setActiveTab("summary");
                     }}
                     className="text-sm text-gray-500 hover:text-gray-700"
                   >
                     Upload New Document
                   </button>
                 </div>
-                
+
                 <div className="mb-4 p-3 bg-blue-50 rounded-lg">
-                  <p className="font-medium text-blue-900">{document.filename}</p>
-                  <p className="text-sm text-blue-700">{document.text_length?.toLocaleString()} characters</p>
+                  <p className="font-medium text-blue-900">
+                    {document.filename}
+                  </p>
+                  <p className="text-sm text-blue-700">
+                    {document.text_length?.toLocaleString()} characters
+                  </p>
                 </div>
 
                 {/* Tabs */}
                 <div className="flex space-x-1 mb-6 bg-gray-100 rounded-lg p-1">
                   {[
-                    { id: 'summary', label: 'Summary', icon: Eye },
-                    { id: 'clauses', label: 'Key Clauses', icon: FileText },
-                    { id: 'obligations', label: 'Obligations', icon: Users },
-                    { id: 'risks', label: 'Risks', icon: AlertTriangle }
+                    { id: "summary", label: "Summary", icon: Eye },
+                    { id: "clauses", label: "Key Clauses", icon: FileText },
+                    { id: "obligations", label: "Obligations", icon: Users },
+                    { id: "risks", label: "Risks", icon: AlertTriangle },
                   ].map((tab) => {
                     const Icon = tab.icon;
                     return (
@@ -254,8 +294,8 @@ Feel free to ask about any specific part of your document!`,
                         onClick={() => setActiveTab(tab.id)}
                         className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                           activeTab === tab.id
-                            ? 'bg-white text-blue-600 shadow-sm'
-                            : 'text-gray-600 hover:text-gray-900'
+                            ? "bg-white text-blue-600 shadow-sm"
+                            : "text-gray-600 hover:text-gray-900"
                         }`}
                       >
                         <Icon className="w-4 h-4" />
@@ -267,42 +307,53 @@ Feel free to ask about any specific part of your document!`,
 
                 {/* Tab Content */}
                 <div className="space-y-4">
-                  {activeTab === 'summary' && (
+                  {activeTab === "summary" && (
                     <div className="prose max-w-none">
-                      <p className="text-gray-700 leading-relaxed">{analysis.summary}</p>
+                      <p className="text-gray-700 leading-relaxed">
+                        {analysis.summary}
+                      </p>
                     </div>
                   )}
 
-                  {activeTab === 'clauses' && (
+                  {activeTab === "clauses" && (
                     <div className="space-y-4">
                       {analysis.key_clauses?.map((clause, index) => (
                         <div key={index} className="border rounded-lg p-4">
                           <div className="flex items-start justify-between mb-2">
-                            <h4 className="font-medium text-gray-900">{clause.clause}</h4>
+                            <h4 className="font-medium text-gray-900">
+                              {clause.clause}
+                            </h4>
                             {clause.location && (
                               <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
                                 {clause.location}
                               </span>
                             )}
                           </div>
-                          <p className="text-sm text-gray-700">{clause.explanation}</p>
+                          <p className="text-sm text-gray-700">
+                            {clause.explanation}
+                          </p>
                         </div>
                       ))}
                     </div>
                   )}
 
-                  {activeTab === 'obligations' && (
+                  {activeTab === "obligations" && (
                     <div className="space-y-4">
                       {analysis.obligations?.map((obligation, index) => (
                         <div key={index} className="border rounded-lg p-4">
                           <div className="flex items-center space-x-2 mb-2">
                             <Users className="w-4 h-4 text-blue-600" />
-                            <span className="font-medium text-gray-900">{obligation.party}</span>
+                            <span className="font-medium text-gray-900">
+                              {obligation.party}
+                            </span>
                           </div>
-                          <p className="text-sm text-gray-700 mb-2">{obligation.obligation}</p>
+                          <p className="text-sm text-gray-700 mb-2">
+                            {obligation.obligation}
+                          </p>
                           {obligation.consequence && (
                             <p className="text-xs text-red-600 bg-red-50 p-2 rounded">
-                              <strong>Consequence:</strong> {obligation.consequence}
+                              <strong>Consequence:</strong>{" "}
+                              {obligation.consequence}
                             </p>
                           )}
                         </div>
@@ -310,21 +361,27 @@ Feel free to ask about any specific part of your document!`,
                     </div>
                   )}
 
-                  {activeTab === 'risks' && (
+                  {activeTab === "risks" && (
                     <div className="space-y-4">
                       {analysis.risks?.map((risk, index) => (
                         <div key={index} className="border rounded-lg p-4">
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center space-x-2">
                               {getRiskTypeIcon(risk.type)}
-                              <span className="font-medium text-gray-900">{risk.type} Risk</span>
+                              <span className="font-medium text-gray-900">
+                                {risk.type} Risk
+                              </span>
                             </div>
                             <div className="flex items-center space-x-1">
                               {getSeverityIcon(risk.severity)}
-                              <span className="text-sm font-medium">{risk.severity}</span>
+                              <span className="text-sm font-medium">
+                                {risk.severity}
+                              </span>
                             </div>
                           </div>
-                          <p className="text-sm text-gray-700">{risk.description}</p>
+                          <p className="text-sm text-gray-700">
+                            {risk.description}
+                          </p>
                         </div>
                       ))}
                     </div>
@@ -340,12 +397,20 @@ Feel free to ask about any specific part of your document!`,
                     </h4>
                     <div className="space-y-3">
                       {analysis.unusual_terms.map((term, index) => (
-                        <div key={index} className="bg-white p-3 rounded border">
-                          <p className="font-medium text-gray-900 text-sm">{term.term}</p>
-                          <p className="text-sm text-gray-700 mt-1">{term.explanation}</p>
+                        <div
+                          key={index}
+                          className="bg-white p-3 rounded border"
+                        >
+                          <p className="font-medium text-gray-900 text-sm">
+                            {term.term}
+                          </p>
+                          <p className="text-sm text-gray-700 mt-1">
+                            {term.explanation}
+                          </p>
                           {term.recommendation && (
                             <p className="text-xs text-blue-600 mt-2">
-                              <strong>Recommendation:</strong> {term.recommendation}
+                              <strong>Recommendation:</strong>{" "}
+                              {term.recommendation}
                             </p>
                           )}
                         </div>
@@ -363,27 +428,31 @@ Feel free to ask about any specific part of your document!`,
                   <MessageCircle className="w-5 h-5 text-blue-600" />
                   <span>Ask Questions</span>
                 </h3>
-                <p className="text-sm text-gray-600 mt-1">Chat about this document</p>
+                <p className="text-sm text-gray-600 mt-1">
+                  Chat about this document
+                </p>
               </div>
 
               <div className="h-96 overflow-y-auto p-4 space-y-4">
                 {chatMessages.map((message, index) => (
                   <div
                     key={index}
-                    className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+                    className={`flex ${
+                      message.type === "user" ? "justify-end" : "justify-start"
+                    }`}
                   >
                     <div
                       className={`max-w-xs px-3 py-2 rounded-lg text-sm ${
-                        message.type === 'user'
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-gray-100 text-gray-900'
+                        message.type === "user"
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-100 text-gray-900"
                       }`}
                     >
                       <p>{message.content}</p>
                     </div>
                   </div>
                 ))}
-                
+
                 {chatLoading && (
                   <div className="flex justify-start">
                     <div className="bg-gray-100 px-3 py-2 rounded-lg">
@@ -391,7 +460,7 @@ Feel free to ask about any specific part of your document!`,
                     </div>
                   </div>
                 )}
-                
+
                 <div ref={chatEndRef} />
               </div>
 
@@ -405,7 +474,7 @@ Feel free to ask about any specific part of your document!`,
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                     disabled={chatLoading}
                     onKeyPress={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey) {
+                      if (e.key === "Enter" && !e.shiftKey) {
                         e.preventDefault();
                         handleChatSubmit(e);
                       }

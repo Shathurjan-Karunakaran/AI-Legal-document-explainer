@@ -15,6 +15,7 @@ import logging
 import traceback
 import os
 import uvicorn
+from mangum import Mangum
 
 # Load environment variables
 load_dotenv()
@@ -384,3 +385,5 @@ async def health_check() -> Dict[str, Any]:
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+handler = Mangum(app)
