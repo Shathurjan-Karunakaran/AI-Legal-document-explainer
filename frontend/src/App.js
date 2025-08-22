@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import Markdown from "react-markdown";
 import {
   Upload,
   FileText,
@@ -440,7 +441,7 @@ function App() {
                 </p>
               </div>
 
-              <div className="h-96 overflow-y-auto p-4 space-y-4">
+              <div className="h-96 overflow-y-auto p-4 space-y-4 scrollbar-hide">
                 {chatMessages.map((message, index) => (
                   <div
                     key={index}
@@ -455,7 +456,11 @@ function App() {
                           : "bg-gray-100 text-gray-900"
                       }`}
                     >
-                      <p>{message.content}</p>
+                      {message.type === "ai" && typeof message.content === "string" ? (
+                        <Markdown>{message.content}</Markdown>
+                      ) : (
+                        <p>{message.content}</p>
+                      )}
                     </div>
                   </div>
                 ))}
