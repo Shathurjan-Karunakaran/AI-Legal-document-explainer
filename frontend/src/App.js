@@ -65,22 +65,29 @@ function App() {
       setDocument(result);
       setAnalysis(result.analysis);
 
-      // Add welcome message to chat
+      // Add welcome message to chat (user-friendly bullet list)
       setChatMessages([
         {
           type: "ai",
-          content: `✅ Document "${result.filename}" has been successfully analyzed! I now have full access to your document content. 
-
-Here are some questions you can ask me:
-• "What are the key terms and conditions?"
-• "Are there any termination clauses?"
-• "What are my obligations under this contract?"
-• "Are there any penalties or fees mentioned?"
-• "What risks should I be aware of?"
-• "Explain the payment terms in simple language"
-• "Are there any auto-renewal clauses?"
-
-Feel free to ask about any specific part of your document!`,
+          content: (
+            <div>
+              <div className="flex items-center space-x-2 mb-2">
+                <span role="img" aria-label="success">✅</span>
+                <span>Document <strong>{result.filename}</strong> has been successfully analyzed! I now have full access to your document content.</span>
+              </div>
+              <div className="mt-2 mb-2">Here are some questions you can ask me:</div>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>What are the key terms and conditions?</li>
+                <li>Are there any termination clauses?</li>
+                <li>What are my obligations under this contract?</li>
+                <li>Are there any penalties or fees mentioned?</li>
+                <li>What risks should I be aware of?</li>
+                <li>Explain the payment terms in simple language</li>
+                <li>Are there any auto-renewal clauses?</li>
+              </ul>
+              <div className="mt-2">Feel free to ask about any specific part of your document!</div>
+            </div>
+          ),
           timestamp: new Date().toISOString(),
         },
       ]);
